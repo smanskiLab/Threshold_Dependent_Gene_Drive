@@ -18,7 +18,7 @@ def assemble(df):
 
     return(df,summarized)
 
-def plot(df,summarized,c0,cErr,F0,Ferr):
+def plot(df,summarized,c0,cErr,F0,Ferr,title,Thr,SEM):
 
     fig, ax1 = plt.subplots(figsize=(10,6))
 
@@ -34,6 +34,7 @@ def plot(df,summarized,c0,cErr,F0,Ferr):
     Yarr=np.subtract(np.divide(np.multiply(F0,np.multiply(CX,CX)),dim),Xarr)
     #/generate function space
 
+    R = Rsquared(df,summarized,c0,F0)
     plt.scatter(df['init_ratio_egi'],df['delta'])
 
     plt.plot(Xarr,Yarr)
@@ -41,10 +42,45 @@ def plot(df,summarized,c0,cErr,F0,Ferr):
     plt.ylim(-0.5,0.5)
 
     plt.plot(Xarr,np.zeros(len(Xarr)),color = 'r')
+    plt.axvline(Thr)
+    plt.axvline(Thr+SEM)
+    plt.axvline(Thr-SEM)
 
-    plt.show()
+    plt.title(title+' R2 = '+str(R))
 
+    plt.savefig('Fec'+title+'.svg')
+    plt.savefig('Fec'+title+'.png')
 
+def Rsquared(df,summarized,C,F):
+
+    #delMean
+    delMean = 0
+    delFunc = 0
+    for x in range(len(df['init_ratio_egi'])):
+
+        temp = summarized[summarized['init_ratio_egi']==df['init_ratio_egi'][x]]
+
+        temp = temp.reset_index()
+
+        delMean += (df['delta'][x]-temp['avg'][0])**2
+
+        delFunc += (df['delta'][x]-funky(df['init_ratio_egi'][x],C,F))**2
+
+    R = 1 - delFunc/delMean
+        
+    return(R)
+
+def funky(Xarr,c0,F0):
+
+    CX=np.multiply(c0,Xarr) 
+
+    C2=np.multiply(np.subtract(1,CX),np.subtract(1,CX))
+
+    dim=np.add(np.multiply(F0,np.multiply(CX,CX)),C2)
+
+    Yarr=np.subtract(np.divide(np.multiply(F0,np.multiply(CX,CX)),dim),Xarr)
+
+    return(Yarr)
 
 #Core Loop
 
@@ -59,4 +95,4 @@ for x in range(len(df['File'])):
     xData = summarized['init_ratio_egi']
     yData = summarized['avg']
 
-    plot(dPoints,summarized,df['C'][x],df['cErr'][x],df['F'][x],df['fErr'][x])
+    plot(dPoints,summarized,df['C'][x],df['cErr'][x],df['F'][x],df['fErr'][x],df['Line'][x]+'_'+str(df['Temp'][x])+'deg',df['Thr'][x],df['SEM'][x])

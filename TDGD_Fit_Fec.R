@@ -1,8 +1,8 @@
 setwd("C:/Users/adams/Documents/PhD/TDGD")
 
-Line <- 'A3.7'
+Line <- 'W1118'
 Temp <- 25
-file <- 'a37tdgd.csv'
+file <- 'w1118tdgd.csv'
 
 df <- read.csv(file)
 
