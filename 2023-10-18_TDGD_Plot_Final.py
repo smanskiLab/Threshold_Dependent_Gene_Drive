@@ -73,6 +73,8 @@ def plot(df,summarized,c0,cErr,title,Thr,SEM):
     plt.axvline(Thr+SEM)
     plt.axvline(Thr-SEM)
 
+    plt.gca().set_aspect('equal')
+
     plt.title(title+' R2 = '+str(R))
 
     plt.savefig('0_'+title+'.svg')
@@ -85,15 +87,15 @@ def Rsquared(df,summarized,C):
     delFunc = 0
     for x in range(len(df['init_ratio_egi'])):
 
-        temp = summarized[summarized['init_ratio_egi']==df['init_ratio_egi'][x]]
+        temp = df['delta'].mean()
 
-        temp = temp.reset_index()
-
-        delMean += (df['delta'][x]-temp['avg'][0])**2
+        delMean += (df['delta'][x]-temp)**2
 
         delFunc += (df['delta'][x]-funky(df['init_ratio_egi'][x],C))**2
 
     R = 1 - delFunc/delMean
+    print(delFunc,delMean, R)
+    input()
         
     return(R)
 

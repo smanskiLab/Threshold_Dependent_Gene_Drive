@@ -34,10 +34,36 @@ def plot(df,summarized,c0,cErr,F0,Ferr,title,Thr,SEM):
     Yarr=np.subtract(np.divide(np.multiply(F0,np.multiply(CX,CX)),dim),Xarr)
     #/generate function space
 
+    #generate Upper function space
+    Xarr=np.linspace(0,1,100)
+
+    CX=np.multiply(c0+cErr,Xarr) 
+
+    C2=np.multiply(np.subtract(1,CX),np.subtract(1,CX))
+
+    dim=np.add(np.multiply(F0+Ferr,np.multiply(CX,CX)),C2)
+
+    YUp=np.subtract(np.divide(np.multiply(F0+Ferr,np.multiply(CX,CX)),dim),Xarr)
+    #/generate Upper function space
+
+    #generate Lower function space
+    Xarr=np.linspace(0,1,100)
+
+    CX=np.multiply(c0-cErr,Xarr) 
+
+    C2=np.multiply(np.subtract(1,CX),np.subtract(1,CX))
+
+    dim=np.add(np.multiply(F0-Ferr,np.multiply(CX,CX)),C2)
+
+    YLow=np.subtract(np.divide(np.multiply(F0-Ferr,np.multiply(CX,CX)),dim),Xarr)
+    #/generate Lower function space
+
     R = Rsquared(df,summarized,c0,F0)
     plt.scatter(df['init_ratio_egi'],df['delta'])
 
     plt.plot(Xarr,Yarr)
+
+    plt.fill_between(Xarr,YUp,YLow,alpha = 0.1, color = 'b')
 
     plt.ylim(-0.5,0.5)
 
@@ -45,6 +71,8 @@ def plot(df,summarized,c0,cErr,F0,Ferr,title,Thr,SEM):
     plt.axvline(Thr)
     plt.axvline(Thr+SEM)
     plt.axvline(Thr-SEM)
+
+    plt.gca().set_aspect('equal')
 
     plt.title(title+' R2 = '+str(R))
 
@@ -58,11 +86,9 @@ def Rsquared(df,summarized,C,F):
     delFunc = 0
     for x in range(len(df['init_ratio_egi'])):
 
-        temp = summarized[summarized['init_ratio_egi']==df['init_ratio_egi'][x]]
+        temp = df['delta'].mean()
 
-        temp = temp.reset_index()
-
-        delMean += (df['delta'][x]-temp['avg'][0])**2
+        delMean += (df['delta'][x]-temp)**2
 
         delFunc += (df['delta'][x]-funky(df['init_ratio_egi'][x],C,F))**2
 

@@ -1,9 +1,9 @@
 setwd("C:/Users/adams/Documents/PhD/TDGD")
 library(tidyverse)
 
-Line <- 'N17.1'
+Line <- 'W1118'
 Temp <- 25
-file <- 'n171tdgd.csv'
+file <- 'w1118tdgd.csv'
 
 df <- read.csv(file)
 
